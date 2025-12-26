@@ -2,18 +2,19 @@
 
 nextflow.enable.dsl=2
 
-params.N_SHARDS = 10           // number of shards
+params.TRAIN_SHARDS = 40
+params.VAL_SHARDS   = 5
 params.DOCKER_IMAGE = 'google/deepvariant:1.5.0'
 
 include { MAKE_EXAMPLES; MAKE_EXAMPLES as MAKE_EXAMPLES_VAL } from './modules/make_example.nf'
 
-// Training
 workflow {
 
     val_ch = Channel.of(
         tuple(
             'validation',
             'chr21',
+            params.VAL_SHARDS,
             file(params.BAM_CHR21),
             file(params.BAI_CHR21)
         )
@@ -32,6 +33,7 @@ workflow {
         tuple(
             'training',
             'chr1',
+            params.TRAIN_SHARDS,
             file(params.BAM_CHR1),
             file(params.BAI_CHR1)
         )

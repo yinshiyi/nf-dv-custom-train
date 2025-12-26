@@ -6,6 +6,7 @@ process MAKE_EXAMPLES {
     input:
     tuple val(mode),
         val(chr),
+        val(n_shards),
         path(bam),
         path(bai),
         path(ref),
@@ -23,12 +24,12 @@ process MAKE_EXAMPLES {
     """
     touch ${bai}
     mkdir -p output/logs
-    seq 0 \$(($params.N_SHARDS-1)) | parallel --halt 2 --line-buffer \
+    seq 0 \$(($n_shards-1)) | parallel --halt 2 --line-buffer \
     make_examples \
       --mode "training" \
       --ref ${ref} \
       --reads ${bam} \
-      --examples "output/${mode}_set.with_label.tfrecord@${params.N_SHARDS}.gz" \
+      --examples "output/${mode}_set.with_label.tfrecord@${n_shards}.gz" \
       --truth_variants ${truth_vcf} \
       --confident_regions ${truth_bed} \
       --task {} \
